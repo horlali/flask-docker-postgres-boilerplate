@@ -14,7 +14,6 @@ DB_NAME: str = os.environ.get("DB_NAME")
 DB_USERNAME: str = os.environ.get("DB_USERNAME")
 DB_PASSWORD: str = os.environ.get("DB_PASSWORD")
 DB_URI: str = f"postgresql://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
-DATABASE_URI = "sqlite:///db.sqlite3"
 
 
 # Configurations
