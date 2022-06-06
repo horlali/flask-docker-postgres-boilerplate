@@ -1,0 +1,36 @@
+version: '3.9'
+
+services:
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./:/app:rw
+    env_file:
+      - .env
+    depends_on:
+      - pgdb
+    restart: always
+    image: epigos-ai:latest
+    command: ./deploy/command.sh
+    container_name: Epigos-AI-API
+
+  pgdb:
+    image: postgres:latest
+    container_name: Epigos-AI-DB
+    restart: always
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data/
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: wordcount_db
+
+volumes:
+  pgdata:
