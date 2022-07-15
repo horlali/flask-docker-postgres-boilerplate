@@ -1,9 +1,9 @@
 import validators
 from flask import Blueprint, request, jsonify
 from src.database import db
-from src.database.models import WebPageWordCounter
-from src.utils.scrapper import main_scraper
+from src.database.models import WebPageWordCounter, WordCounter
 from src.utils.custom_errors import SiteCannotBeReachedError
+from src.utils.scrapper import main_scraper
 
 
 scraper_bp = Blueprint(
@@ -37,5 +37,20 @@ def scraper_webpage():
         err = {"status": "failed", "detail": "The url you submitted cannot be reached"}
         return jsonify(err), 400
 
-    resp = {"status": "success", "detail": "Request is processing"}
+    resp = {"status": "success", "data": word_count_json}
     return jsonify(resp), 200
+
+
+def inject_into_db(parsered_dict: str):
+
+    injection_set = [
+        WordCounter(salted_hash=key, encrypted_word=value[0], frequency=value[1])
+        for key, value in parsered_dict.items()
+    ]
+
+    print(injection_set[:10])
+    db.session.bulk_save_objects(injection_set)
+    db.session.commit()
+
+
+# inject_into_db(main_scraper(url="https://bbc.com"))

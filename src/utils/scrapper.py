@@ -1,4 +1,5 @@
 import re
+from hashlib import sha256
 from itertools import islice
 from operator import itemgetter
 from collections import Counter
@@ -129,10 +130,22 @@ def frequent_word_dict(word_list: list, length: int = 100) -> dict:
     return dict(islice(sort_dict.items(), length))
 
 
+def hash_word(word: str) -> str:
+    return sha256(word.encode("utf-8")).hexdigest()
+
+
+def hash_dict(word_dict: dict):
+    return dict([(hash_word(key), [key,value]) for key, value in word_dict.items()])
+
+
 def main_scraper(url: str):
+
     if check_if_url_works(url=url):
         webpage_element = url_to_list(url=url)
         webpage_words = clean_url(webpage_element)
-        return frequent_word_dict(webpage_words)
+        frequent_words = frequent_word_dict(webpage_words)
+
+        return hash_dict(frequent_words)
+
     else:
         raise SiteCannotBeReachedError(url=url)
